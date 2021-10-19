@@ -18,14 +18,10 @@ class Radar:
     """
 
     def __init__(self):
-        # logging.basicConfig(filename="./radar_log.txt")
-        # self.logger = logging.getLogger('SpeedTrap.Radar')
-        # self.logger.debug("Creating Radar() instance")
         self._serial_connection = None
         # Handle busy serial port
         for _retry in range(5):
             try:
-                # self.logger.debug("Attempting to open Serial connection")
                 self._serial_connection = serial.Serial(
                     port="/dev/ttyACM0",
                     baudrate=9600,
@@ -39,11 +35,9 @@ class Radar:
             except Exception as e:
                 print("Caught connection error: ", e)
                 if _retry < 10:
-                    # self.logger.info("Serial port busy, connection attempt #%s, retrying in 3 seconds", _retry)
                     time.sleep(3)
                     pass
                 else:
-                    # self.logger.warning("Serial port busy, connection attempt #%s, failed", _retry)
                     raise
         self._configure_serial_device()
 
@@ -54,22 +48,8 @@ class Radar:
         Omnipresense (at the time of writing the most recent location is here:
         https://omnipresense.com/wp-content/uploads/2019/10/AN-010-Q_API_Interface.pdf)
         """
-        # self.logger.debug("Entering _configure_serial_device()")
         self._serial_connection.flushInput()
         self._serial_connection.flushOutput()
-        # self.send_serial_command(self._config.radar_speed_output_units)
-        # self.send_serial_command(self._config.radar_data_precision)
-        # self.send_serial_command(self._config.radar_sampling_rate)
-        # self.send_serial_command(self._config.radar_reported_minimum_speed)
-        # self.send_serial_command(self._config.radar_speed_reported_maximum)
-        # self.send_serial_command(self._config.radar_direction_control)
-        # self.send_serial_command(self._config.radar_speed_report)
-        # self.send_serial_command(self._config.radar_processing_light_activity)
-        # self.send_serial_command(self._config.radar_json_mode)
-        # self.send_serial_command(self._config.radar_processing_led_control)
-        # self.send_serial_command(self._config.radar_blank_data_reporting)
-        # self.send_serial_command(self._config.radar_transmit_power)
-        # self.logger.debug("Leaving _configure_serial_device()")
 
     def send_serial_command(self, command):
         """
@@ -80,27 +60,21 @@ class Radar:
         command : str
             This is command string being sent to the radar device.
         """
-        # self.logger.debug("Entering send_serial_command()")
-        # self.logger.debug("Flushing input buffer")
         self._serial_connection.flushInput()
         data_for_send_str = command
         data_for_send_bytes = str.encode(data_for_send_str)
-        # self.logger.debug("Sending command %s", command)
         self._serial_connection.write(data_for_send_bytes)
         # Initialize message verify checking
         ser_message_start = '{'
         ser_write_verify = False
         # Print out module response to command string
-        # self.logger.debug("Verifying response")
         while not ser_write_verify:
             data_rx_bytes = self._serial_connection.readline()
             data_rx_length = len(data_rx_bytes)
             if data_rx_length != 0:
                 data_rx_str = str(data_rx_bytes)
-                # self.logger.debug("Radar buffer contained: %s", data_rx_str)
                 if data_rx_str.find(ser_message_start):
                     ser_write_verify = True
-        # self.logger.debug("Leaving send_serial_command()")
 
     def read_serial_buffer(self):
         """
@@ -111,11 +85,8 @@ class Radar:
         String:
             This is the string of text on the serial buffer for the radar device
         """
-        # self.logger.debug("Entering read_serial_buffer()")
         ops_rx_bytes = self._serial_connection.readline()
         ops_rx_string = ops_rx_bytes.decode()
-        # self.logger.debug("Radar buffer contained: %s", ops_rx_string)
-        # self.logger.debug("Leaving read_serial_buffer()")
         return str(ops_rx_string)
 
     def write_to_file(self, data):
@@ -128,7 +99,6 @@ class Radar:
         """
 
 
-        # TODO: SETH: Need to make sure permissions are correct here
         if not os.path.isdir("./data"):
             print("Making directory")
             os.mkdir("./data")
